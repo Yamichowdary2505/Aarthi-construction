@@ -98,7 +98,7 @@ def init_db():
             (
                 "Shell House - North Plot",
                 "Meera Iyer",
-                "customer@arthi.com",
+                "meera@arthi.com",
                 "Shell / Half Done",
                 "Hyderabad",
                 "Awaiting Interiors",
@@ -113,7 +113,7 @@ def init_db():
             (
                 "Apartment Block - Tower B",
                 "Prakash Group",
-                "customer@arthi.com",
+                "prakash@arthi.com",
                 "Apartment / Multi Unit",
                 "Chennai",
                 "Milestone Review",
@@ -311,15 +311,31 @@ else:
     else:
         tab1, tab2 = st.tabs(tabs)
 
+    primary_section = "Project portfolio"
+    if user["role"] == "Customer":
+        primary_section = "My project summary"
+    elif user["role"] == "Engineer":
+        primary_section = "Assigned projects"
+
     with tab1:
-        st.markdown("<div class='section-title'>Project portfolio</div>", unsafe_allow_html=True)
-        for project in projects:
-            st.markdown(
-                f"<div class='project-card'><h2>{project['name']}</h2><div class='project-meta'><span class='project-badge badge-progress'>{project['progress_percent']}% progress</span><span class='project-badge badge-status'>{project['status']}</span></div><p>{project['description']}</p><p class='project-meta'><strong>Tier:</strong> {project['tier']} | <strong>Location:</strong> {project['location']} | <strong>ETA:</strong> {project['expected_handover']} | <strong>Engineer:</strong> {project['engineer_name']}</p></div>",
-                unsafe_allow_html=True,
-            )
-            st.progress(project['progress_percent'] / 100)
-            st.info(project['ai_insight'])
+        st.markdown(f"<div class='section-title'>{primary_section}</div>", unsafe_allow_html=True)
+        if user["role"] == "Customer":
+            for project in projects:
+                st.markdown(
+                    f"<div class='customer-card'><h2>{project['name']}</h2><p><strong>Status:</strong> {project['status']}</p><p><strong>Progress:</strong> {project['progress_percent']}%</p><p><strong>ETA:</strong> {project['expected_handover']}</p><p><strong>Engineer:</strong> {project['engineer_name']}</p></div>",
+                    unsafe_allow_html=True,
+                )
+                st.metric("Budget used", f"₹{project['spent']:,}")
+                st.metric("Total budget", f"₹{project['budget']:,}")
+                st.info(project['ai_insight'])
+        else:
+            for project in projects:
+                st.markdown(
+                    f"<div class='project-card'><h2>{project['name']}</h2><div class='project-meta'><span class='project-badge badge-progress'>{project['progress_percent']}% progress</span><span class='project-badge badge-status'>{project['status']}</span></div><p>{project['description']}</p><p class='project-meta'><strong>Tier:</strong> {project['tier']} | <strong>Location:</strong> {project['location']} | <strong>ETA:</strong> {project['expected_handover']} | <strong>Engineer:</strong> {project['engineer_name']}</p></div>",
+                    unsafe_allow_html=True,
+                )
+                st.progress(project['progress_percent'] / 100)
+                st.info(project['ai_insight'])
 
     with tab2:
         st.markdown("<div class='section-title'>Project updates</div>", unsafe_allow_html=True)
