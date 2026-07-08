@@ -231,11 +231,50 @@ else:
     if st.sidebar.button("Logout"):
         st.session_state.user = None
 
-    projects = get_projects()
+    all_projects = get_projects()
+    if user["role"] == "Customer":
+        projects = [p for p in all_projects if p["client_email"] == user["email"]]
+    elif user["role"] == "Engineer":
+        projects = [p for p in all_projects if p["engineer_name"] == user["name"]]
+    else:
+        projects = all_projects
+
+    if not projects:
+        st.warning("No projects found for your account.")
+        st.stop()
+
     total_projects = len(projects)
     avg_progress = round(sum(p["progress_percent"] for p in projects) / total_projects, 1) if total_projects else 0
     active_projects = sum(1 for p in projects if p["status"] != "Completed")
     completed_projects = sum(1 for p in projects if p["status"] == "Completed")
+
+    if user["role"] == "Admin":
+        header_text = "Arthi Construction Control Center"
+        subtitle = "Full executive view for all projects, updates, and customer transparency."
+        cards = [
+            ("Total Projects", total_projects),
+            ("Active Projects", active_projects),
+            ("Completed Projects", completed_projects),
+            ("Average Progress", f"{avg_progress}%"),
+        ]
+        tabs = ["Dashboard", "Updates", "Customer View"]
+    elif user["role"] == "Engineer":
+        header_text = "Engineer Dashboard"
+        subtitle = "Your assigned construction projects and site updates."
+        cards = [
+            ("Assigned Projects", total_projects),
+            ("Active Sites", active_projects),
+            ("Average Progress", f"{avg_progress}%"),
+        ]
+        tabs = ["My Projects", "Updates"]
+    else:
+        header_text = "Customer Project Portal"
+        subtitle = "Your personal project status, delivery ETA, and client updates."
+        cards = [
+            ("My Projects", total_projects),
+            ("Average Progress", f"{avg_progress}%"),
+        ]
+        tabs = ["Project Summary", "Updates"]
 
     st.markdown(
         """
@@ -261,15 +300,16 @@ else:
         unsafe_allow_html=True,
     )
 
-    st.markdown(f"<h1 class='header-title'>Arthi Construction Control Center</h1><p class='header-subtitle'>A clean, customer-ready dashboard for project updates, financial visibility, and AI-powered insights.</p>", unsafe_allow_html=True)
+    st.markdown(f"<h1 class='header-title'>{header_text}</h1><p class='header-subtitle'>{subtitle}</p>", unsafe_allow_html=True)
 
-    c1, c2, c3, c4 = st.columns([1, 1, 1, 1], gap="large")
-    c1.markdown(f"<div class='metric-card'><h3>Total Projects</h3><h2>{total_projects}</h2></div>", unsafe_allow_html=True)
-    c2.markdown(f"<div class='metric-card'><h3>Active</h3><h2>{active_projects}</h2></div>", unsafe_allow_html=True)
-    c3.markdown(f"<div class='metric-card'><h3>Completed</h3><h2>{completed_projects}</h2></div>", unsafe_allow_html=True)
-    c4.markdown(f"<div class='metric-card'><h3>Average Progress</h3><h2>{avg_progress}%</h2></div>", unsafe_allow_html=True)
+    columns = st.columns(len(cards), gap="large")
+    for col, (title, value) in zip(columns, cards):
+        col.markdown(f"<div class='metric-card'><h3>{title}</h3><h2>{value}</h2></div>", unsafe_allow_html=True)
 
-    tab1, tab2, tab3 = st.tabs(["Dashboard", "Updates", "Customer View"])
+    if len(tabs) == 3:
+        tab1, tab2, tab3 = st.tabs(tabs)
+    else:
+        tab1, tab2 = st.tabs(tabs)
 
     with tab1:
         st.markdown("<div class='section-title'>Project portfolio</div>", unsafe_allow_html=True)
@@ -282,7 +322,7 @@ else:
             st.info(project['ai_insight'])
 
     with tab2:
-        st.markdown("<div class='section-title'>Customer-ready field updates</div>", unsafe_allow_html=True)
+        st.markdown("<div class='section-title'>Project updates</div>", unsafe_allow_html=True)
         for project in projects:
             st.markdown(f"<h3 style='margin-bottom:0.4rem;'>{project['name']}</h3>", unsafe_allow_html=True)
             updates = get_updates(project['id'])
@@ -292,12 +332,13 @@ else:
                     st.caption(f"Updated on {update['created_at']}")
             st.divider()
 
-    with tab3:
-        st.markdown("<div class='section-title'>Client portal preview</div>", unsafe_allow_html=True)
-        for project in projects:
-            st.markdown(
-                f"<div class='customer-card'><h2>{project['name']}</h2><p><strong>Client:</strong> {project['client_name']}</p><p><strong>Status:</strong> {project['status']}</p><p class='customer-highlight'><strong>Budget used:</strong> ₹{project['spent']:,} / ₹{project['budget']:,}</p><p><strong>Expected handover:</strong> {project['expected_handover']}</p></div>",
-                unsafe_allow_html=True,
-            )
-            st.success(project['ai_insight'])
-            st.divider()
+    if user["role"] == "Admin":
+        with tab3:
+            st.markdown("<div class='section-title'>Customer portal preview</div>", unsafe_allow_html=True)
+            for project in projects:
+                st.markdown(
+                    f"<div class='customer-card'><h2>{project['name']}</h2><p><strong>Client:</strong> {project['client_name']}</p><p><strong>Status:</strong> {project['status']}</p><p class='customer-highlight'><strong>Budget used:</strong> ₹{project['spent']:,} / ₹{project['budget']:,}</p><p><strong>Expected handover:</strong> {project['expected_handover']}</p></div>",
+                    unsafe_allow_html=True,
+                )
+                st.success(project['ai_insight'])
+                st.divider()
