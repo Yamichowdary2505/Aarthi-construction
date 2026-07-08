@@ -1,10 +1,11 @@
 ﻿import hashlib
 import sqlite3
+import tempfile
 from pathlib import Path
 
 import streamlit as st
 
-DB_PATH = Path(__file__).resolve().parent / "demo.db"
+DB_PATH = Path(tempfile.gettempdir()) / "arthi_demo.db"
 
 
 @st.cache_resource
@@ -205,7 +206,6 @@ if st.session_state.user is None:
             user = authenticate(email, password)
             if user:
                 st.session_state.user = user
-                st.experimental_rerun()
             else:
                 st.error("Invalid credentials")
 
@@ -230,7 +230,6 @@ else:
     st.sidebar.write(f"Company: {user['company']}")
     if st.sidebar.button("Logout"):
         st.session_state.user = None
-        st.experimental_rerun()
 
     projects = get_projects()
     total_projects = len(projects)
