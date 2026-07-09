@@ -286,8 +286,10 @@ def inject_theme():
         }
 
         html, body, [class*="css"] { font-family: 'Inter', sans-serif; color: var(--ink); }
-        h1, h2, h3, .display-font { font-family: 'Space Grotesk', sans-serif; }
-        .mono, .metric-value, .money { font-family: 'IBM Plex Mono', monospace; }
+        h1, h2, h3, h4, h5, h6, .display-font {
+        font-family: 'Space Grotesk', sans-serif;
+        color: var(--navy) !important;
+        }
 
         .stApp {
             background:
