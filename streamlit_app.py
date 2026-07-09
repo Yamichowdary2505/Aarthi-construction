@@ -303,8 +303,15 @@ def inject_theme():
         color: var(--ink) !important;
         font-weight: 600 !important;
         }
-
         
+        [data-testid="stCaptionContainer"],
+        [data-testid="stCaptionContainer"] p {
+        color: var(--slate) !important;
+        }
+        
+        .risk-ontrack, .risk-ontrack * { color: #235436 !important; }
+        .risk-watch, .risk-watch * { color: #7A4E10 !important; }
+        .risk-risk, .risk-risk * { color: #7C2C18 !important; }
 
         .stApp {
             background:
