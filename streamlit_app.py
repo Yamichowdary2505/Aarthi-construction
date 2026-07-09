@@ -290,6 +290,21 @@ def inject_theme():
         font-family: 'Space Grotesk', sans-serif;
         color: var(--navy) !important;
         }
+        
+        .hero-panel h1,
+        .hero-panel .hero-title,
+        .hero-panel .hero-subtitle {
+        color: #F2F0E9 !important;
+        }
+        
+        [data-testid="stExpander"] summary,
+        [data-testid="stExpander"] summary p,
+        .streamlit-expanderHeader {
+        color: var(--ink) !important;
+        font-weight: 600 !important;
+        }
+
+        
 
         .stApp {
             background:
