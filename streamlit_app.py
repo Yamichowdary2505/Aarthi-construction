@@ -312,6 +312,24 @@ def inject_theme():
         .risk-ontrack, .risk-ontrack * { color: #235436 !important; }
         .risk-watch, .risk-watch * { color: #7A4E10 !important; }
         .risk-risk, .risk-risk * { color: #7C2C18 !important; }
+        
+        Streamlit theme here is dark and leaves text white by default.
+        [data-testid="stAppViewContainer"] :not([data-testid="stSidebar"] *):not(.hero-panel):not(.hero-panel *) {
+        color: var(--ink);
+        }
+        
+        [data-testid="stWidgetLabel"] p,
+        [data-testid="stWidgetLabel"] label {
+        color: var(--ink) !important;
+        }
+        
+        .bp-card, .bp-card * {
+        color: var(--ink) !important;
+        }
+        
+        .bp-card .eyebrow, .bp-card .eyebrow * {
+        color: var(--amber-dark) !important;
+        }
 
         .stApp {
             background:
